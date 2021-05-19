@@ -8,7 +8,7 @@
 
 const GLint WIDTH = 800, HEIGHT = 600;
 
-GLuint EBO, VAO, VBO, shader;
+GLuint EBO, VAO1, VAO2, VBO1, VBO2, shader;
 
 //Vertx Shaders
 static const char *vShader = "                                      \n\
@@ -83,26 +83,27 @@ void CompileShaders(){
 
 void CreateRectangle(){
     GLfloat vertices[] = {
-           0.5f,  0.5f, 0.0f,  // top right
-          -0.5f, -0.5f, 0.0f,  // bottom left
-          -0.5f,  0.5f, 0.0f   // top left
+        // first triangle
+        -0.9f, -0.5f, 0.0f,  // left
+        -0.0f, -0.5f, 0.0f,  // right
+        -0.45f, 0.5f, 0.0f,  // top
+        // second triangle
+         0.0f, -0.5f, 0.0f,  // left
+         0.9f, -0.5f, 0.0f,  // right
+         0.45f, 0.5f, 0.0f   // top
+    };
 
-          1.0f, 1.0f, 0.0f,
-          1.0f, -0.5f, 0.0f, 
-          0.5f, -0.5f, 0.0f,
-
-      };
 
 //    GLint indices[] = {
 //        0, 1, 3,
 //        1, 2, 3
 //    };
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    glGenVertexArrays(1, &VAO1);
+    glBindVertexArray(VAO1);
 
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glGenBuffers(1, &VBO1);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO1);
             glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 //            glGenBuffers(1, &EBO);
@@ -119,18 +120,37 @@ void CreateRectangle(){
 }
 
 void CreateTriangle(){
-    GLfloat vertices[] = {
-        -1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f};
+    GLfloat vertices1[] = {
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f};
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    GLfloat vertices2[] = {
+        0.5f, -0.5f, 0.0f,
+        1.0f, -0.5f, 0.0f,
+        0.5f, 1.0f, 0.0f};
 
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glGenVertexArrays(1, &VAO1);
+    glBindVertexArray(VAO1);
 
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        glGenBuffers(1, &VBO1);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);
+    
+    glGenVertexArrays(1, &VAO2);
+    glBindVertexArray(VAO2);
+
+        glGenBuffers(1, &VBO2);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
             glEnableVertexAttribArray(0);
 
@@ -181,8 +201,8 @@ int main(){
     //Setup viewport size
     glViewport(0, 0, bufferwidth, bufferheight);
     
-    //CreateTriangle();
-    CreateRectangle();
+    CreateTriangle();
+//    CreateRectangle();
     CompileShaders();
 
     //Loop until window is closed
@@ -192,9 +212,11 @@ int main(){
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shader);
-            glBindVertexArray(VAO);
-//                glDrawArrays(GL_TRIANGLES, 0, 3);
-                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            glBindVertexArray(VAO1);
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+            glBindVertexArray(VAO2);
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+//                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
         glfwSwapBuffers(mainWindow);

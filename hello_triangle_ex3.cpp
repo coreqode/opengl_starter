@@ -8,7 +8,7 @@
 
 const GLint WIDTH = 800, HEIGHT = 600;
 
-GLuint EBO, VAO, VBO, shader;
+GLuint EBO, VAO1, VAO2, VBO1, VBO2, shader1, shader2;
 
 //Vertx Shaders
 static const char *vShader = "                                      \n\
@@ -20,7 +20,7 @@ void main(){                                                        \n\
     gl_Position = vec4(0.4* pos.x, 0.4* pos.y, 0.4 * pos.z, 1.0f);                  \n\
 }\0";
 
-static const char *fShader = "                                      \n\
+static const char *fShader1 = "                                      \n\
 #version 330                                                        \n\
                                                                     \n\
 out vec4 colour;                                                    \n\
@@ -28,6 +28,16 @@ out vec4 colour;                                                    \n\
 void main(){                                                        \n\
     colour = vec4(1.0f, 0.0f, 0.0f, 1.0f);                          \n\
 }\0";
+
+static const char *fShader2= "                                      \n\
+#version 330                                                        \n\
+                                                                    \n\
+out vec4 colour;                                                    \n\
+                                                                    \n\
+void main(){                                                        \n\
+    colour = vec4(0.5f, 1.0f, 0.0f, 1.0f);                          \n\
+}\0";
+
 
 void AddShader(GLuint theProgram, const char *shaderCode, GLenum shaderType){
     GLuint theShader = glCreateShader(shaderType);
@@ -44,65 +54,95 @@ void AddShader(GLuint theProgram, const char *shaderCode, GLenum shaderType){
     GLint result = 0;
     GLchar eLog[1024] = {0};
 
-    glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
-    if (!result){
-        glGetShaderInfoLog(shader, sizeof(eLog), NULL, eLog);
-        printf("Error compiling the %d shader: '%s'\n", shaderType, eLog);
-        return ;
-    }
+//    glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
+//    if (!result){
+//        glGetShaderInfoLog(shader, sizeof(eLog), NULL, eLog);
+//        printf("Error compiling the %d shader: '%s'\n", shaderType, eLog);
+//        return ;
+//    }
     glAttachShader(theProgram, theShader);
 }
 
-void CompileShaders(){
-    shader = glCreateProgram();
+void CompileShaders1(){
+    shader1 = glCreateProgram();
 
-    if (!shader){
-        printf("Error creating shader program");
+    if (!shader1){
+        printf("Error creating shader1 program");
         return ;
     }
-    AddShader(shader, vShader, GL_VERTEX_SHADER);
-    AddShader(shader, fShader, GL_FRAGMENT_SHADER);
+    AddShader(shader1, vShader, GL_VERTEX_SHADER);
+    AddShader(shader1, fShader1, GL_FRAGMENT_SHADER);
 
     GLint result = 0;
     GLchar eLog[1024] = {0};
 
-    glLinkProgram(shader);
-    glGetProgramiv(shader, GL_LINK_STATUS, &result);
+    glLinkProgram(shader1);
+    glGetProgramiv(shader1, GL_LINK_STATUS, &result);
     if (! result){
-        glGetProgramInfoLog(shader, sizeof(eLog), NULL, eLog);
+        glGetProgramInfoLog(shader1, sizeof(eLog), NULL, eLog);
         printf("Error linking program:\n", eLog);
     }
 
-    glValidateProgram(shader);
-    glGetProgramiv(shader, GL_VALIDATE_STATUS, &result);
+    glValidateProgram(shader1);
+    glGetProgramiv(shader1, GL_VALIDATE_STATUS, &result);
     if (! result){
-        glGetProgramInfoLog(shader, sizeof(eLog), NULL, eLog);
+        glGetProgramInfoLog(shader1, sizeof(eLog), NULL, eLog);
         printf("Error validating program: '%s'\n", eLog);
     }
 }
 
+void CompileShaders2(){
+    shader2 = glCreateProgram();
+
+    if (!shader2){
+        printf("Error creating shader2 program");
+        return ;
+    }
+    AddShader(shader2, vShader, GL_VERTEX_SHADER);
+    AddShader(shader2, fShader2, GL_FRAGMENT_SHADER);
+
+    GLint result = 0;
+    GLchar eLog[1024] = {0};
+
+    glLinkProgram(shader2);
+    glGetProgramiv(shader2, GL_LINK_STATUS, &result);
+    if (! result){
+        glGetProgramInfoLog(shader2, sizeof(eLog), NULL, eLog);
+        printf("Error linking program:\n", eLog);
+    }
+
+    glValidateProgram(shader2);
+    glGetProgramiv(shader2, GL_VALIDATE_STATUS, &result);
+    if (! result){
+        glGetProgramInfoLog(shader2, sizeof(eLog), NULL, eLog);
+        printf("Error validating program: '%s'\n", eLog);
+    }
+}
+
+
 void CreateRectangle(){
     GLfloat vertices[] = {
-           0.5f,  0.5f, 0.0f,  // top right
-          -0.5f, -0.5f, 0.0f,  // bottom left
-          -0.5f,  0.5f, 0.0f   // top left
+        // first triangle
+        -0.9f, -0.5f, 0.0f,  // left
+        -0.0f, -0.5f, 0.0f,  // right
+        -0.45f, 0.5f, 0.0f,  // top
+        // second triangle
+         0.0f, -0.5f, 0.0f,  // left
+         0.9f, -0.5f, 0.0f,  // right
+         0.45f, 0.5f, 0.0f   // top
+    };
 
-          1.0f, 1.0f, 0.0f,
-          1.0f, -0.5f, 0.0f, 
-          0.5f, -0.5f, 0.0f,
-
-      };
 
 //    GLint indices[] = {
 //        0, 1, 3,
 //        1, 2, 3
 //    };
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    glGenVertexArrays(1, &VAO1);
+    glBindVertexArray(VAO1);
 
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glGenBuffers(1, &VBO1);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO1);
             glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 //            glGenBuffers(1, &EBO);
@@ -119,18 +159,37 @@ void CreateRectangle(){
 }
 
 void CreateTriangle(){
-    GLfloat vertices[] = {
-        -1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f};
+    GLfloat vertices1[] = {
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f};
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    GLfloat vertices2[] = {
+        0.5f, -0.5f, 0.0f,
+        1.0f, -0.5f, 0.0f,
+        0.5f, 1.0f, 0.0f};
 
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glGenVertexArrays(1, &VAO1);
+    glBindVertexArray(VAO1);
 
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        glGenBuffers(1, &VBO1);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);
+    
+    glGenVertexArrays(1, &VAO2);
+    glBindVertexArray(VAO2);
+
+        glGenBuffers(1, &VBO2);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
             glEnableVertexAttribArray(0);
 
@@ -181,9 +240,10 @@ int main(){
     //Setup viewport size
     glViewport(0, 0, bufferwidth, bufferheight);
     
-    //CreateTriangle();
-    CreateRectangle();
-    CompileShaders();
+    CreateTriangle();
+//    CreateRectangle();
+    CompileShaders1();
+    CompileShaders2();
 
     //Loop until window is closed
     while(!glfwWindowShouldClose(mainWindow)){
@@ -191,15 +251,20 @@ int main(){
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shader);
-            glBindVertexArray(VAO);
-//                glDrawArrays(GL_TRIANGLES, 0, 3);
-                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glUseProgram(shader1);
+            glBindVertexArray(VAO1);
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
+        glUseProgram(0);
 
+        glUseProgram(shader2);
+            glBindVertexArray(VAO2);
+                glDrawArrays(GL_TRIANGLES, 0, 6);
 
         glfwSwapBuffers(mainWindow);
         glBindVertexArray(0);
         glUseProgram(0);
+
 
     }
 

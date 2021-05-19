@@ -83,15 +83,16 @@ void CompileShaders(){
 
 void CreateRectangle(){
     GLfloat vertices[] = {
-           0.5f,  0.5f, 0.0f,  // top right
-          -0.5f, -0.5f, 0.0f,  // bottom left
-          -0.5f,  0.5f, 0.0f   // top left
+        // first triangle
+        -0.9f, -0.5f, 0.0f,  // left
+        -0.0f, -0.5f, 0.0f,  // right
+        -0.45f, 0.5f, 0.0f,  // top
+        // second triangle
+         0.0f, -0.5f, 0.0f,  // left
+         0.9f, -0.5f, 0.0f,  // right
+         0.45f, 0.5f, 0.0f   // top
+    };
 
-          1.0f, 1.0f, 0.0f,
-          1.0f, -0.5f, 0.0f, 
-          0.5f, -0.5f, 0.0f,
-
-      };
 
 //    GLint indices[] = {
 //        0, 1, 3,
@@ -193,8 +194,8 @@ int main(){
 
         glUseProgram(shader);
             glBindVertexArray(VAO);
-//                glDrawArrays(GL_TRIANGLES, 0, 3);
-                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+//                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
         glfwSwapBuffers(mainWindow);
@@ -206,3 +207,4 @@ int main(){
 
     return 0;
 }
+
